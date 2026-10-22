@@ -1,0 +1,499 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>小画芽 少儿美术教学助手 交互原型 v1.1</title><style>
+:root{
+  --paper:#F0ECE3;
+  --app-bg:#FAF7F1;
+  --card:#FFFFFF;
+  --ink:#22262F;
+  --ink-2:#4B4F58;
+  --muted:#8C8B85;
+  --line:#ECE5D9;
+  --line-2:#F3EEE5;
+  --coral:#E1674A;
+  --coral-deep:#C74F33;
+  --coral-soft:#FBEDE7;
+  --green:#2F6B58;
+  --green-soft:#EAF2EE;
+  --gold:#E9AE45;
+  --blue:#6E93B3;
+  --serif:"Songti SC","STSong","Noto Serif SC",serif;
+  --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--sans);color:var(--ink);
+  background:
+    radial-gradient(1200px 600px at 12% 0%,#FBF7EF 0%,rgba(251,247,239,0) 60%),
+    radial-gradient(900px 500px at 90% 10%,#EFE8DC 0%,rgba(239,232,220,0) 55%),
+    var(--paper);
+  min-height:100vh;
+}
+/* ---------- outside stage ---------- */
+.page{max-width:1180px;margin:0 auto;padding:54px 40px 72px;display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:72px;align-items:start}
+.brief{position:sticky;top:54px;max-width:560px}
+.eyebrow{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.eyebrow::before{content:"";width:26px;height:1px;background:#C9C1B2}
+.brief h1{font-family:var(--serif);font-weight:600;font-size:64px;line-height:1;margin:18px 0 6px;letter-spacing:.02em}
+.brief h1 span{color:var(--coral)}
+.brief .sub{font-family:var(--serif);font-size:21px;line-height:1.6;color:#4A4740;margin:0 0 26px}
+.brief .sub em{font-style:normal;border-bottom:2px solid rgba(225,103,74,.35)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:30px}
+.pill{font-size:12px;color:#5C574D;border:1px solid #DCD4C6;background:rgba(255,255,255,.6);border-radius:999px;padding:6px 12px}
+.blocks{display:grid;gap:20px;border-top:1px solid #DED6C8;padding-top:24px}
+.block h4{margin:0 0 8px;font-size:12px;letter-spacing:.12em;color:var(--coral-deep);font-weight:600}
+.block p{margin:0;font-size:14px;line-height:1.78;color:#4A4740}
+.block ul{margin:0;padding-left:16px;font-size:14px;line-height:1.78;color:#4A4740}
+.block li{margin:2px 0}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:26px;border-top:1px solid #DED6C8;padding-top:22px}
+.metric .n{font-family:var(--serif);font-size:30px;color:#2A2E36;line-height:1}
+.metric .n small{font-size:13px;color:var(--muted);font-family:var(--sans)}
+.metric .l{font-size:11.5px;color:var(--muted);margin-top:7px;line-height:1.4}
+.hint{margin-top:26px;font-size:12.5px;color:#8A8478;line-height:1.7;display:flex;gap:8px;align-items:flex-start}
+.hint b{color:#4A4740}
+
+/* ---------- device ---------- */
+.demo{display:flex;flex-direction:column;align-items:center;gap:22px}
+.phone{
+  width:404px;height:852px;flex:none;background:#101114;border-radius:60px;padding:7px;
+  box-shadow:0 50px 90px -30px rgba(25,22,18,.55),0 10px 30px -10px rgba(25,22,18,.25),inset 0 0 0 1.5px rgba(255,255,255,.10);
+  position:relative;
+}
+.phone::after{content:"";position:absolute;inset:5px;border-radius:56px;border:1px solid rgba(255,255,255,.06);pointer-events:none}
+.host{position:relative;width:390px;height:838px;border-radius:53px;overflow:hidden;background:var(--app-bg);isolation:isolate}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:112px;height:30px;background:#0B0C0E;border-radius:20px;z-index:60;pointer-events:none}
+.island::after{content:"";position:absolute;right:10px;top:9px;width:11px;height:11px;border-radius:50%;background:#1C1F26;box-shadow:inset 0 0 3px rgba(255,255,255,.18)}
+.statusbar{position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font-size:13px;font-weight:600;letter-spacing:.02em;z-index:55;color:var(--ink);pointer-events:none}
+.sb-icons{display:flex;align-items:center;gap:6px}
+.sb-icons svg{display:block}
+
+/* screens */
+.screen{position:absolute;inset:0;display:none;flex-direction:column;background:var(--app-bg);padding-top:54px}
+.screen.tab-screen{padding-bottom:74px}
+.screen.active{display:flex}
+.screen.active .scroll{animation:enter .34s cubic-bezier(.2,.7,.3,1)}
+@keyframes enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 20px 28px;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.tab-screen .scroll{padding-bottom:24px}
+
+.appbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 18px 10px;min-height:44px}
+.appbar .ttl{font-size:17px;font-weight:600;letter-spacing:.01em}
+.appbar .side{min-width:34px;display:flex;justify-content:flex-end}
+.iconbtn{width:34px;height:34px;border-radius:50%;border:none;background:transparent;display:grid;place-items:center;color:var(--ink);cursor:pointer;transition:background .2s}
+.iconbtn:hover{background:rgba(0,0,0,.05)}
+.iconbtn .ic{width:21px;height:21px}
+.ic{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:16px}
+.logo{width:26px;height:26px;border-radius:9px;background:linear-gradient(145deg,#EF7C5C,#D85536);display:grid;place-items:center;color:#fff;font-family:var(--serif);font-size:14px;box-shadow:0 4px 10px rgba(216,85,54,.28)}
+
+/* home */
+.greet{padding:6px 2px 16px}
+.greet .hi{font-family:var(--serif);font-size:26px;letter-spacing:.01em}
+.greet .date{font-size:12.5px;color:var(--muted);margin-top:6px}
+.hero{position:relative;border-radius:24px;padding:20px 20px 18px;color:#fff;overflow:hidden;background:linear-gradient(135deg,#EE7E5B 0%,#DB5A3B 55%,#C74F33 100%);box-shadow:0 18px 34px -18px rgba(199,79,51,.75)}
+.hero .kicker{font-size:12px;letter-spacing:.18em;opacity:.86}
+.hero .num{font-family:var(--serif);font-size:46px;line-height:1.05;margin-top:4px}
+.hero .num span{font-size:16px;opacity:.85;margin-left:4px}
+.hero .sub{font-size:12.5px;opacity:.9;margin-top:6px}
+.hero .go{margin-top:14px;display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--coral-deep);border:none;border-radius:999px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);box-shadow:0 6px 14px rgba(110,35,20,.18)}
+.hero .go .ic{width:15px;height:15px}
+.hero-art{position:absolute;right:16px;bottom:18px;width:104px;height:82px;border-radius:7px;overflow:hidden;border:3px solid rgba(255,255,255,.92);box-shadow:0 12px 24px -10px rgba(90,30,15,.45);transform:rotate(-4deg);background:#FDF3D9}
+.hero-art svg{width:100%;height:100%;display:block}
+.hero .glow{position:absolute;right:-60px;top:-80px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.13)}
+
+.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 4px}
+.stat{background:var(--card);border:1px solid var(--line-2);border-radius:16px;padding:12px 12px 11px}
+.stat .n{font-size:19px;font-weight:600;letter-spacing:.01em}
+.stat .n small{font-size:11px;color:var(--muted);font-weight:400;margin-left:2px}
+.stat .l{font-size:11px;color:var(--muted);margin-top:4px}
+
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 10px}
+.sec-head h3{margin:0;font-size:15px;font-weight:600}
+.sec-head span{font-size:12px;color:var(--muted)}
+.classcard{display:block;background:var(--card);border:1px solid var(--line-2);border-radius:18px;padding:14px;cursor:pointer;transition:transform .18s,box-shadow .18s}
+.cc-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cc-top .t{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-bottom{display:flex;align-items:center;gap:10px;margin-top:9px}
+.cc-bottom .s{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.classcard:hover{transform:translateY(-1px);box-shadow:0 12px 24px -18px rgba(0,0,0,.35)}
+.classcard .avs{display:flex;flex:none}
+.ava{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;font-size:10.5px;font-weight:600;color:#fff;border:2px solid #fff;margin-left:-7px}
+.ava:first-child{margin-left:0}
+.a1{background:#E8A24A}.a2{background:#7FA6C4}.a3{background:#8FAF8A}.a4{background:#D8897B}.a5{background:#9B8FC0}
+.tag{font-size:11px;border-radius:999px;padding:4px 9px;white-space:nowrap}
+.tag.warn{background:var(--coral-soft);color:var(--coral-deep)}
+.tag.ok{background:var(--green-soft);color:var(--green)}
+.tag.gray{background:#F2EFE9;color:#8B8579}
+
+.recent{display:flex;flex-direction:column;gap:9px}
+.rrow{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line-2);border-radius:16px;padding:9px}
+.thumb{width:46px;height:46px;border-radius:11px;overflow:hidden;flex:none;background:#F1EBDF}
+.thumb svg{width:100%;height:100%;display:block}
+.rrow .info{flex:1;min-width:0}
+.rrow .info .n{font-size:13.5px;font-weight:600}
+.rrow .info .d{font-size:11.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* tabbar */
+.tabbar{position:absolute;left:0;right:0;bottom:0;height:74px;display:flex;align-items:flex-start;padding:8px 10px 0;background:rgba(255,255,255,.93);backdrop-filter:blur(18px);border-top:1px solid var(--line);z-index:50;transition:transform .3s}
+.tabbar.hide{transform:translateY(110%)}
+.tab{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:#A29C90;font-family:var(--sans);cursor:pointer;padding:4px 0}
+.tab .ic{width:22px;height:22px}
+.tab.on{color:var(--coral-deep)}
+.tab.on .ic{stroke-width:1.9}
+.homebar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:132px;height:5px;border-radius:3px;background:#1B1C1F;opacity:.85;z-index:53}
+
+/* generic */
+.card{background:var(--card);border:1px solid var(--line-2);border-radius:18px;padding:16px}
+.card+.card{margin-top:12px}
+.card h3{margin:0 0 10px;font-size:14.5px;font-weight:600}
+.muted{color:var(--muted)}
+.tiny{font-size:11.5px}
+.btn{border:none;border-radius:999px;padding:12px 18px;font-size:14px;font-weight:600;font-family:var(--sans);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:transform .15s,filter .2s}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--coral);color:#fff;box-shadow:0 12px 24px -12px rgba(225,103,74,.8)}
+.btn.primary:hover{filter:brightness(1.03)}
+.btn.ghost{background:#F3EFE7;color:var(--ink)}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.4;pointer-events:none;box-shadow:none}
+.actionbar{flex:none;display:flex;align-items:center;gap:12px;padding:12px 20px 26px;background:linear-gradient(to top,rgba(250,247,241,1) 60%,rgba(250,247,241,.9));border-top:1px solid rgba(236,229,217,.7);z-index:20}
+.actionbar .note{flex:1;font-size:11.5px;color:var(--muted);line-height:1.45}
+
+/* queue */
+.page-sub{font-size:12px;color:var(--muted);margin:-4px 2px 14px}
+.seg{display:flex;background:#F0EBE2;border-radius:12px;padding:3px;margin-bottom:14px}
+.seg button{flex:1;border:none;background:none;border-radius:9px;padding:8px;font-size:13px;font-family:var(--sans);color:#6B665D;cursor:pointer}
+.seg button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.qrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-2)}
+.qrow:last-child{border-bottom:none}
+.qrow .av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:600;flex:none}
+.qrow .who{flex:1;min-width:0}
+.qrow .who .n{font-size:14px;font-weight:600}
+.qrow .who .s{font-size:11.5px;color:var(--muted);margin-top:2px}
+.mini-btn{border:1px solid var(--line);background:#fff;border-radius:999px;font-size:12px;padding:6px 12px;color:var(--ink-2);font-family:var(--sans);cursor:pointer;white-space:nowrap}
+.mini-btn.coral{border-color:transparent;background:var(--coral-soft);color:var(--coral-deep);font-weight:600}
+
+/* upload */
+.steps{display:flex;align-items:center;gap:6px;padding:2px 2px 16px}
+.step{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#A9A296}
+.step .dotn{width:19px;height:19px;border-radius:50%;background:#EAE4D9;color:#8E887C;display:grid;place-items:center;font-size:10.5px;font-weight:700}
+.step.on{color:var(--ink);font-weight:600}
+.step.on .dotn{background:var(--ink);color:#fff}
+.step.done .dotn{background:var(--green);color:#fff}
+.step-line{flex:1;height:1px;background:#E4DDD1}
+.drop{position:relative;border-radius:20px;overflow:hidden;background:#fff;border:1px solid var(--line-2)}
+.drop-empty{aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:
+  radial-gradient(60% 60% at 50% 40%,#FDFBF6 0%,#F6F1E7 100%);
+  border:1.5px dashed #DED5C5;border-radius:20px;margin:0}
+.drop-empty .ic{width:34px;height:34px;color:#B9B0A0}
+.drop-empty p{margin:0;font-size:12.5px;color:#9A9385}
+.drop-empty .btns{display:flex;gap:8px}
+.artwrap{position:relative;aspect-ratio:4/3;background:#F6F0E4;overflow:hidden}
+.artwrap svg.art{width:100%;height:100%;display:block}
+.artwrap .re{position:absolute;right:9px;top:9px;display:flex;gap:5px}
+.artwrap .re button{border:none;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-radius:999px;font-size:10.5px;padding:5px 9px;color:#4A4740;font-family:var(--sans);cursor:pointer;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.form-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line-2)}
+.form-row:last-child{border-bottom:none}
+.form-row .k{font-size:13px;color:#6F6A60}
+.form-row .v{font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:6px}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:5px 10px;color:#6F6A60;background:#fff}
+.chip.on{border-color:var(--coral);color:var(--coral-deep);background:var(--coral-soft)}
+.tip{display:flex;gap:9px;background:#F5F1E8;border-radius:14px;padding:12px;font-size:11.5px;line-height:1.6;color:#7C766A;margin-top:12px}
+.tip .ic{width:15px;height:15px;flex:none;margin-top:1px;color:#A79E8D}
+
+/* analyzing */
+.analyze{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:0 26px;text-align:center}
+.scan{position:relative;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 24px 50px -26px rgba(0,0,0,.5)}
+.scan svg{width:100%;display:block;filter:saturate(.96)}
+.scan::after{content:"";position:absolute;left:0;right:0;height:38%;background:linear-gradient(to bottom,rgba(225,103,74,0) 0%,rgba(225,103,74,.26) 70%,rgba(225,103,74,.75) 100%);top:-40%;animation:scanmove 2.2s ease-in-out infinite}
+@keyframes scanmove{0%{top:-40%}100%{top:104%}}
+.scan .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:26px 26px;mix-blend-mode:overlay;opacity:.5}
+.analyze h2{font-family:var(--serif);font-size:21px;margin:24px 0 6px}
+.analyze .sub{font-size:12.5px;color:var(--muted);margin:0}
+.steps-list{width:100%;margin:22px 0 4px;display:flex;flex-direction:column;gap:11px;text-align:left}
+.sl{display:flex;align-items:center;gap:10px;font-size:13px;color:#B3AC9E;transition:color .3s}
+.sl .b{width:18px;height:18px;border-radius:50%;border:1.5px solid #DCD4C5;display:grid;place-items:center;flex:none;transition:all .3s}
+.sl .b .ic{width:11px;height:11px;opacity:0}
+.sl.on{color:var(--ink-2)}
+.sl.on .b{border-color:var(--coral);background:var(--coral);color:#fff}
+.sl.on .b .ic{opacity:1}
+.progress{width:100%;height:4px;border-radius:3px;background:#EDE7DB;overflow:hidden;margin-top:18px}
+.progress i{display:block;height:100%;width:0;border-radius:3px;background:linear-gradient(90deg,#EE7E5B,#C74F33);transition:width .5s ease}
+
+/* result */
+.art-note{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.6;color:#6E675B;background:#F6F1E7;border-radius:12px;padding:10px 12px;margin-top:10px}
+.art-note b{color:var(--coral-deep);font-weight:600}
+.artwrap .dots .dot{position:absolute;width:24px;height:24px;border-radius:50%;border:2px solid #fff;background:var(--coral);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.25);transform:translate(-50%,-50%);font-family:var(--sans)}
+.artwrap .dots .dot.tap{animation:pulse 1.1s ease-out}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(225,103,74,.55)}100%{box-shadow:0 0 0 14px rgba(225,103,74,0)}}
+.dim-row{display:flex;align-items:center;gap:10px;margin:7px 0}
+.dim-row .lab{width:38px;font-size:12px;color:#6F6A60}
+.bar{flex:1;height:6px;border-radius:4px;background:#F0EBE1;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#EFB64C,#E1674A);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.dim-row .val{width:24px;text-align:right;font-size:12px;font-weight:600;color:#4A4740}
+.tabs{display:flex;gap:18px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.tabs button{border:none;background:none;padding:8px 0 10px;font-size:13px;color:#968F82;font-family:var(--sans);cursor:pointer;position:relative}
+.tabs button.on{color:var(--ink);font-weight:600}
+.tabs button.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:2px;background:var(--ink)}
+.style-tip{display:flex;align-items:center;gap:5px;font-size:10.5px;color:#9A9385;margin:-2px 0 8px}
+.style-tip .ic{color:var(--coral)}
+textarea.crit{width:100%;border:none;background:#FAF7F0;border-radius:12px;padding:12px;font-family:var(--sans);font-size:13px;line-height:1.8;color:#3D4149;resize:none;min-height:132px;outline:none}
+textarea.crit:focus{box-shadow:0 0 0 1.5px rgba(225,103,74,.35)}
+.aitools{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0 4px}
+.aitool{font-size:11.5px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 10px;color:#5E594F;cursor:pointer;font-family:var(--sans)}
+.aitool:hover{border-color:#E5C4B8;color:var(--coral-deep)}
+.confidence{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-top:10px}
+.confidence .pct{color:var(--green);font-weight:600}
+
+/* success */
+.done-wrap{display:flex;flex-direction:column;align-items:center;padding:34px 8px 0;text-align:center}
+.bigcheck{width:76px;height:76px;border-radius:50%;background:var(--green);display:grid;place-items:center;color:#fff;box-shadow:0 18px 36px -16px rgba(47,107,88,.75);animation:pop .5s cubic-bezier(.2,1.3,.4,1)}
+.bigcheck .ic{width:36px;height:36px;stroke-width:2.4}
+@keyframes pop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.done-wrap h2{font-family:var(--serif);font-size:24px;margin:22px 0 8px}
+.done-wrap p{font-size:13px;color:var(--muted);line-height:1.7;margin:0}
+.done-stat{display:flex;gap:10px;width:100%;margin-top:24px}
+.done-stat>div{flex:1;background:#fff;border:1px solid var(--line-2);border-radius:14px;padding:10px 8px}
+.done-stat b{display:block;font-family:var(--serif);font-size:19px;color:#2A2E36}
+.done-stat span{display:block;font-size:10.5px;color:var(--muted);margin-top:3px}
+.done-cards{width:100%;margin-top:12px;display:flex;flex-direction:column;gap:10px;text-align:left}
+.done-card{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line-2);border-radius:16px;padding:14px;cursor:pointer}
+.done-card .ic{color:var(--coral)}
+.done-card .info{flex:1}
+.done-card .info .t{font-size:13.5px;font-weight:600}
+.done-card .info .s{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+/* practice */
+.reason{display:flex;gap:12px;align-items:center;background:var(--coral-soft);border-radius:16px;padding:14px;margin-bottom:14px}
+.reason .score{font-family:var(--serif);font-size:30px;color:var(--coral-deep);line-height:1}
+.reason .txt{font-size:12.5px;line-height:1.6;color:#7A4B3B}
+.reason .txt b{color:var(--coral-deep)}
+.task{background:#fff;border:1px solid var(--line-2);border-radius:16px;padding:14px;margin-bottom:10px}
+.task .top{display:flex;align-items:flex-start;gap:11px}
+.task .idx{width:24px;height:24px;border-radius:8px;background:#F4EFE6;color:#7D7669;font-size:12px;font-weight:700;display:grid;place-items:center;flex:none}
+.task .t{font-size:13.5px;font-weight:600;flex:1;line-height:1.5}
+.task .t small{display:block;font-weight:400;font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.6}
+.task .swap{border:none;background:none;color:#A9A296;cursor:pointer;padding:2px}
+.task .meta2{display:flex;gap:12px;margin-top:9px;padding-left:35px;font-size:11px;color:#9A9385}
+.task .meta2 span{display:flex;align-items:center;gap:4px}
+.task .meta2 .ic{width:12px;height:12px}
+
+/* report h5 */
+.h5{background:#FFFDF9}
+.h5 .brandline{display:flex;align-items:center;justify-content:space-between;padding:2px 2px 14px}
+.h5 .brandline .b{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600}
+.h5 .week{font-size:11px;color:var(--muted)}
+.h5-hero{position:relative;border-radius:20px;overflow:hidden;box-shadow:0 18px 36px -24px rgba(0,0,0,.4)}
+.h5-hero svg{width:100%;display:block}
+.h5-hero .cap{position:absolute;left:12px;bottom:12px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-radius:10px;padding:7px 10px;font-size:11px;color:#4A4740;line-height:1.4}
+.h5-hero .cap b{display:block;font-size:12.5px;color:var(--ink)}
+.quote{font-family:var(--serif);font-size:14.5px;line-height:1.9;color:#3D4149;background:#fff;border:1px solid var(--line-2);border-radius:16px;padding:16px;margin-top:14px;position:relative}
+.quote::before{content:"“";font-family:var(--serif);font-size:38px;color:#E8C9BC;position:absolute;left:12px;top:2px;line-height:1}
+.quote p{margin:0;padding-left:16px}
+.quote .sign{font-family:var(--sans);font-size:11.5px;color:var(--muted);text-align:right;margin-top:8px}
+.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
+.mini-grid .m{border-radius:12px;overflow:hidden;aspect-ratio:1;background:#F6F0E4}
+.mini-grid svg{width:100%;height:100%;display:block}
+
+/* growth */
+.profile-mini{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.big-av{width:52px;height:52px;border-radius:50%;background:linear-gradient(145deg,#F0B45A,#E08A3C);color:#fff;display:grid;place-items:center;font-size:19px;font-weight:600}
+.profile-mini .n{font-size:16px;font-weight:600}
+.profile-mini .s{font-size:11.5px;color:var(--muted);margin-top:3px}
+.chart{padding:4px 0 0}
+.chart svg{width:100%;display:block;overflow:visible}
+.milestones{display:flex;gap:7px;flex-wrap:wrap}
+.mile{font-size:11px;background:#F5F0E6;border-radius:999px;padding:6px 10px;color:#6F6A60}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.compare .cmp{border-radius:14px;overflow:hidden;background:#F6F0E4;position:relative}
+.compare svg{width:100%;display:block;aspect-ratio:4/3}
+.compare .lb{font-size:10.5px;color:var(--muted);text-align:center;padding:6px 0;background:#fff}
+.tl{position:relative;padding-left:18px;margin-top:4px}
+.tl::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:1px;background:var(--line)}
+.tl-item{position:relative;padding:0 0 16px}
+.tl-item::before{content:"";position:absolute;left:-17px;top:5px;width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid #D9CDBA}
+.tl-item.hot::before{border-color:var(--coral);background:var(--coral)}
+.tl-item .d{font-size:10.5px;color:var(--muted)}
+.tl-item .c{font-size:12.5px;line-height:1.6;margin-top:3px;color:#4A4740}
+
+/* me */
+.me-hero{display:flex;align-items:center;gap:13px;background:#fff;border:1px solid var(--line-2);border-radius:18px;padding:16px;margin-bottom:14px}
+.me-hero .av{width:54px;height:54px;border-radius:50%;background:linear-gradient(145deg,#8FAF8A,#5E8F79);display:grid;place-items:center;color:#fff;font-size:18px;font-weight:600}
+.me-hero .n{font-size:16px;font-weight:600}
+.me-hero .s{font-size:11.5px;color:var(--muted);margin-top:4px}
+.list{background:#fff;border:1px solid var(--line-2);border-radius:18px;overflow:hidden}
+.li{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line-2);cursor:pointer}
+.li:last-child{border-bottom:none}
+.li .ic{color:#8C8579}
+.li .t{flex:1;font-size:13.5px}
+.li .v{font-size:12px;color:var(--muted)}
+.li .chev{color:#C3BAA9}
+.ver{text-align:center;font-size:10.5px;color:#B4AC9E;margin-top:18px}
+
+/* jump nav */
+.jump{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;max-width:420px}
+.jump button{font-family:var(--sans);font-size:11.5px;border:1px solid #DCD3C4;background:rgba(255,255,255,.72);color:#6A6458;border-radius:999px;padding:6px 11px;cursor:pointer;transition:all .18s}
+.jump button:hover{border-color:#C9B9A4;color:#3E3A33}
+.jump button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.toast{position:absolute;left:50%;bottom:96px;transform:translate(-50%,14px);background:rgba(28,30,36,.92);color:#fff;font-size:12px;padding:10px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:all .3s;z-index:80;white-space:nowrap;backdrop-filter:blur(10px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* embed / screenshot mode */
+body.nofx *{animation:none!important;transition:none!important}
+body.embed{background:#FAF7F1}
+body.embed .page{grid-template-columns:1fr;padding:0;max-width:none;justify-items:center}
+body.embed .brief,body.embed .jump{display:none}
+body.embed .demo{gap:0}
+body.embed .phone{box-shadow:none;border-radius:0;width:390px;height:838px;padding:0;background:transparent}
+body.embed .phone::after{display:none}
+body.embed .host{border-radius:0}
+@media (max-width:1020px){
+  .page{grid-template-columns:1fr;padding:32px 20px 60px;gap:40px;justify-items:center}
+  .brief{position:static;max-width:560px;width:100%}
+  .brief h1{font-size:48px}
+}
+
+/* delivery refinements */
+.confirm-dialog{border:1px solid #DED5C5;border-radius:20px;padding:24px;max-width:min(380px,calc(100vw - 36px));color:#22262F;font-family:var(--sans);box-shadow:0 20px 60px #0003}.confirm-dialog::backdrop{background:#22262F77}.confirm-dialog h2{font-size:18px;margin:0 0 12px}.confirm-dialog p{font-size:14px;line-height:1.8;margin:0 0 20px}.confirm-dialog .toolbar{justify-content:flex-end}
+.page{gap:56px;padding-top:32px}.brief{top:32px}.brief h1{font-size:56px}.brief .sub{font-size:19px}.metrics{margin-top:18px}.screen{padding-top:60px}.screen.tab-screen{padding-bottom:74px}.phone{max-width:404px;width:100%}.host{width:100%;height:100%}.demo{min-width:0}.demo-note{font-size:12px;line-height:1.7;color:#6F6A60;max-width:400px}.statusbar{height:55px;font-size:11px}.statusbar b{font-weight:600;color:var(--coral-deep)}
+.appbar{min-height:48px;flex-shrink:0}.appbar .ttl{font-size:16px}.scroll{min-height:0;overscroll-behavior:contain}.actionbar{padding:12px 18px 26px;flex-wrap:wrap}.actionbar .btn{font-size:13px}.actionbar .note{min-width:100px}.btn{font-size:13px}.btn[disabled]{cursor:not-allowed}.field{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#5C574D;margin-top:14px}.field select{font:inherit;font-size:13px;padding:10px 12px;min-height:40px;color:var(--ink);border:1px solid #DDD4C5;background:white;border-radius:10px;width:100%}.field textarea{font:inherit;font-size:14px;line-height:1.8;resize:vertical;min-height:160px;border:1px solid #D8CEBC;border-radius:12px;padding:12px;color:var(--ink);width:100%;background:#fff}.field input[type=checkbox]{width:18px;height:18px;flex:none;accent-color:var(--coral)}.checkline{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.6;margin-top:14px;color:#5C574D}.checkline input{margin-top:2px}.save-status{font-size:11px;color:var(--green);margin:7px 2px;min-height:18px}.error-msg{font-size:12px;color:#A23922;line-height:1.6;margin:8px 0}.empty-state{text-align:center;padding:36px 12px}.empty-state h3{font-size:19px;font-family:var(--serif)}.empty-state p{font-size:13px;color:#716B60;line-height:1.8}.observe{display:grid;grid-template-columns:50px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2);font-size:12px;line-height:1.7}.observe b{font-weight:500;color:#8C614F}.observe:last-child{border:0}.artimg{display:block;width:100%;height:100%;object-fit:contain;background:#F6F0E4}.art-shell{aspect-ratio:4/3;position:relative;border-radius:18px;overflow:hidden;background:#F8EFD9}.art-caption{font-size:11px;color:#8B8579;line-height:1.6;margin:8px 2px}.dot{cursor:pointer}.dot:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #367D69;outline-offset:3px}.tabbar{height:74px}.tabbar.hide{pointer-events:none}.tabbar[hidden]{display:none}.tag{font-size:10.5px}.qrow{gap:9px}.qrow .who .s{white-space:normal;line-height:1.6}.qrow .who .n{font-size:13px}.qrow .av{width:34px;height:34px}.mini-btn{font-size:11px}.seg button{font-size:12px}.tiny{line-height:1.7}.warnbox{background:#FBEDE7;border-radius:13px;padding:12px;color:#904C38;font-size:12px;line-height:1.8;margin:12px 0}.task .t small{line-height:1.7}.readonly-copy{white-space:pre-wrap;overflow-wrap:anywhere}.quote p{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.85}.name-select{width:100%;font:inherit;font-size:13px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px;margin-bottom:12px}.progress{margin-bottom:12px}.brandline{flex-wrap:wrap;gap:6px}.done-wrap{padding-top:26px}.done-wrap p{line-height:1.8}.done-stat b{font-size:18px}.demo-controls{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}.demo-controls a{font-size:12px;color:#675B4B}.storage-warning{font-size:12px;line-height:1.7;color:#9C3E28}.jump button{font-family:var(--sans);font-size:11px}.list button.li{width:100%;border:0;background:#fff;font:inherit;text-align:left;cursor:pointer}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.toolbar .btn{padding:10px 13px}.statrow .n{font-size:21px}.tab-screen .scroll{padding-bottom:30px}.brief .metrics .n{font-size:24px}.report-only{padding-bottom:0}.report-only .scroll{padding-bottom:35px}.h5-hero img{width:100%;display:block}.h5-hero .cap{position:static;background:#fff;padding:10px;border-radius:0;font-size:12px;color:#5C574D}.qrow button{flex:none}.privacy-copy{font-size:12px;line-height:1.9;color:#6F6A60}.phone .homebar{pointer-events:none}
+@media(max-width:1020px){.page{max-width:660px;padding:20px 20px 36px;gap:28px}.demo{order:-1;width:100%}.brief{max-width:560px}.brief h1{font-size:42px}.brief .sub{font-size:17px}.phone{height:852px}.brief .blocks{gap:14px}.demo-note{max-width:404px}.hint{margin-top:16px}}
+@media(max-width:460px){.statusbar span{display:none}.page{padding:12px 10px 28px;gap:22px}.phone{height:min(852px,calc(100svh - 35px));min-height:590px;border-radius:36px;padding:5px}.phone::after{border-radius:34px}.host{border-radius:32px}.brief{padding:0 8px}.scroll{padding-left:16px;padding-right:16px}.statusbar{padding:0 24px}.hero .sub{max-width:185px}.hero-art{width:80px;height:65px;right:12px}.appbar{padding-left:14px;padding-right:14px}.actionbar{padding-left:16px;padding-right:16px}.jump{max-width:100%}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+body.embed .phone{width:390px;height:838px;max-width:100%}
+</style></head><body><svg style="display:none" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 3.5l8 7V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.2 20c0-3.3 2.6-5.6 5.8-5.6s5.8 2.3 5.8 5.6"/><path d="M16 5.2a3.2 3.2 0 0 1 0 6.4M17.6 14.8c2 .5 3.4 2.2 3.4 4.4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M7.5 15.5 11 11l3 2.5 4.5-6"/></symbol>
+  <symbol id="i-me" viewBox="0 0 24 24"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20.4c0-3.7 3.2-6.2 7.2-6.2s7.2 2.5 7.2 6.2"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3.5 8.5h3l1.4-2h8.2l1.4 2h3v11h-17z"/><circle cx="12" cy="13.5" r="3.3"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m4 17 5-5 3.5 3.5 2.5-2.5 5 5"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M14.5 5 8 12l6.5 7"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M9.5 5 16 12l-6.5 7"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.8 5.4L19 10.2l-5.2 1.8L12 17.4l-1.8-5.4L5 10.2l5.2-1.8z"/><path d="M18.6 15.6 19.5 18l2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10.5 13.5"/><path d="M21 3 14.4 21l-3.9-7.5L3 9.6z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m4.5 12.5 4.6 4.6L19.5 6.5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 15.5H6l1.2-2V9.8a4.8 4.8 0 0 1 9.6 0v3.7z"/><path d="M10.2 18.5a1.9 1.9 0 0 0 3.6 0"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4.5V10h-5.5"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2.2"/><path d="M8.2 10.5V8a3.8 3.8 0 0 1 7.6 0v2.5"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V4"/><path d="m8 7.5 4-3.5 4 3.5"/><path d="M5.5 13.5V19h13v-5.5"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4.5 19.5H9L19 9.5a2.1 2.1 0 0 0-3-3L6 16.5z"/><path d="m14.6 8.4 3 3"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.3"/><path d="M12 11v5.2"/><path d="M12 7.9v.2"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.6 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.8l5.9-.9z"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h13l-3-3M20 16H7l3 3"/></symbol>
+  <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6.5 3v14.5H21"/><path d="M3 6.5h14.5V21"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4.5 12h15M14 6.5l5.5 5.5L14 17.5"/></symbol>
+  <symbol id="miniTree" viewBox="0 0 100 100">
+    <rect width="100" height="100" fill="#F8EFD9"/>
+    <circle cx="78" cy="20" r="9" fill="#F5C860" opacity=".6"/>
+    <path d="M0 76 Q26 70 52 75 T100 72 V100 H0Z" fill="#E4C084"/>
+    <path d="M49 86 C48 74 47 66 46 58" stroke="#7A4B2A" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <g fill="currentColor" opacity=".92">
+      <ellipse cx="38" cy="44" rx="17" ry="15"/><ellipse cx="58" cy="38" rx="18" ry="16"/><ellipse cx="50" cy="54" rx="20" ry="14"/>
+    </g>
+    <g fill="#fff" opacity=".26"><ellipse cx="44" cy="38" rx="8" ry="6"/></g>
+  </symbol>
+</svg>
+
+
+<main class="page"><aside class="brief">
+<div class="eyebrow">产品方案与交互原型 · v1.1 · 2026.10</div><h1>小画芽<span>。</span></h1>
+<p class="sub">让课后点评更具体，<br>把最后的判断留给老师。</p>
+<div class="meta"><span class="pill">少儿美术机构</span><span class="pill">老师工作台 + 家长报告</span><span class="pill">离线演示版</span></div>
+<div class="blocks"><div class="block"><h4>要解决的问题</h4><p>围绕周末集中点评的场景，探索如何减少重复组织评语的负担，让家长看到作品细节和一个可执行的练习建议。需求与效果仍需真实访谈和试用验证。</p></div>
+<div class="block"><h4>产品边界</h4><ul><li>只写画面观察，不打分、不排名、不推测天赋。</li><li>老师核对家长版后，才能生成家长报告。</li><li>改稿和报告分开保存，重新确认才更新报告。</li><li>练习围绕一个主题，三个备选任选一个。</li></ul></div>
+<div class="block"><h4>本次交付</h4><p>可点击原型、产品需求文档、功能与验收清单。人物与作品为虚构示例；没有已完成访谈、真实业务成绩或上线记录的声明。</p></div></div>
+<div class="metrics"><div class="metric"><div class="n">3 位</div><div class="l">示例学生<br>独立草稿</div></div><div class="metric"><div class="n">3 版</div><div class="l">学生 家长 课堂<br>分别编辑</div></div><div class="metric"><div class="n">0 次</div><div class="l">外部发送<br>全部本地演示</div></div></div>
+<div class="hint"><div><b>演示路线：</b>工作台 → 待点评 → 选择学生 → 使用示例作品 → 观察演示 → 修改家长版 → 核对确认 → 家长报告。自选图片只做本地预览与手工点评。</div></div>
+<div class="hint"><div><b>数据提示：</b>请仅使用虚构或已获授权的非敏感练习图。本地草稿可能因清理浏览器而丢失，可在「我的」导出 JSON 备份。本原型不提供真实登录和权限隔离。</div></div>
+</aside><div class="demo"><div class="phone"><div class="host"><div class="island"></div><div class="statusbar"><b>本地演示</b><span>小画芽 · v1.1</span></div><div id="screens"></div><div class="toast" id="toast" role="status" aria-live="polite"></div><div class="homebar"></div><nav class="tabbar" id="tabbar" aria-label="老师工作区"></nav></div></div><div class="jump" id="jump" aria-label="原型评审导航"></div><div class="demo-note">此处的导航用于评审。家长报告是只读预览，不会向微信发送消息，也不代表线上权限已实现。所有图像和草稿仅保存在当前浏览器。</div></div></main>
+<script>
+const SAMPLE_SVG="<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"art\" viewBox=\"0 0 400 300\">\n                  <defs>\n                    <linearGradient id=\"skyA\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">\n                      <stop offset=\"0\" stop-color=\"#FDF4DA\"/><stop offset=\"1\" stop-color=\"#F8E7C6\"/>\n                    </linearGradient>\n                    <filter id=\"wcA\" x=\"-20%\" y=\"-20%\" width=\"140%\" height=\"140%\">\n                      <feTurbulence type=\"fractalNoise\" baseFrequency=\"0.035\" numOctaves=\"4\" seed=\"9\" result=\"n\"/>\n                      <feDisplacementMap in=\"SourceGraphic\" in2=\"n\" scale=\"7\" xChannelSelector=\"R\" yChannelSelector=\"G\"/>\n                    </filter>\n                    <filter id=\"blurA\"><feGaussianBlur stdDeviation=\"1.6\"/></filter>\n                    <filter id=\"grainX\"><feTurbulence type=\"fractalNoise\" baseFrequency=\"0.85\" numOctaves=\"3\" stitchTiles=\"stitch\"/><feColorMatrix type=\"saturate\" values=\"0\"/></filter>\n                  </defs>\n                  <rect width=\"400\" height=\"300\" fill=\"url(#skyA)\"/>\n                  <circle cx=\"322\" cy=\"58\" r=\"26\" fill=\"#F6C75B\" opacity=\".55\" filter=\"url(#blurA)\"/>\n                  <g stroke=\"#B98A4B\" stroke-width=\"1.4\" fill=\"none\" opacity=\".55\" stroke-linecap=\"round\">\n                    <path d=\"M60 74c4-6 8-6 12 0\"/><path d=\"M84 64c3-5 7-5 10 0\"/>\n                  </g>\n                  <path d=\"M0 238 Q96 220 200 232 T400 224 L400 300 L0 300Z\" fill=\"#E7C07A\" opacity=\".8\"/>\n                  <path d=\"M0 262 Q120 248 216 258 T400 252 L400 300 L0 300Z\" fill=\"#C99B55\" opacity=\".6\"/>\n                  <g filter=\"url(#wcA)\">\n                    <path d=\"M196 252 C193 220 190 200 186 180 C182 162 188 152 195 143 C201 152 202 164 199 180 C196 200 200 222 207 252 Z\" fill=\"#7C4C2B\"/>\n                    <path d=\"M196 192 C186 182 172 176 161 170\" stroke=\"#7C4C2B\" stroke-width=\"7\" fill=\"none\" stroke-linecap=\"round\"/>\n                    <path d=\"M198 180 C211 170 226 166 236 161\" stroke=\"#7C4C2B\" stroke-width=\"6\" fill=\"none\" stroke-linecap=\"round\"/>\n                  </g>\n                  <g filter=\"url(#wcA)\">\n                    <ellipse cx=\"170\" cy=\"140\" rx=\"48\" ry=\"42\" fill=\"#EBA83A\" opacity=\".95\"/>\n                    <ellipse cx=\"226\" cy=\"128\" rx=\"44\" ry=\"38\" fill=\"#E98F2E\" opacity=\".92\"/>\n                    <ellipse cx=\"200\" cy=\"104\" rx=\"40\" ry=\"34\" fill=\"#F3C24F\" opacity=\".95\"/>\n                    <ellipse cx=\"238\" cy=\"158\" rx=\"36\" ry=\"30\" fill=\"#D97B2C\" opacity=\".9\"/>\n                    <ellipse cx=\"160\" cy=\"176\" rx=\"34\" ry=\"26\" fill=\"#E9A03B\" opacity=\".85\"/>\n                    <ellipse cx=\"196\" cy=\"150\" rx=\"46\" ry=\"36\" fill=\"#F0B142\" opacity=\".75\"/>\n                    <ellipse cx=\"215\" cy=\"96\" rx=\"24\" ry=\"17\" fill=\"#F8D977\" opacity=\".8\"/>\n                    <ellipse cx=\"178\" cy=\"120\" rx=\"16\" ry=\"12\" fill=\"#F7D473\" opacity=\".75\"/>\n                  </g>\n                  <g filter=\"url(#wcA)\" opacity=\".9\">\n                    <ellipse cx=\"300\" cy=\"196\" rx=\"4.5\" ry=\"3\" fill=\"#E98F2E\" transform=\"rotate(-22 300 196)\"/>\n                    <ellipse cx=\"318\" cy=\"172\" rx=\"4\" ry=\"2.6\" fill=\"#EBA83A\" transform=\"rotate(18 318 172)\"/>\n                    <ellipse cx=\"286\" cy=\"160\" rx=\"3.6\" ry=\"2.4\" fill=\"#F3C24F\" transform=\"rotate(-12 286 160)\"/>\n                    <ellipse cx=\"112\" cy=\"124\" rx=\"4\" ry=\"2.6\" fill=\"#D97B2C\" transform=\"rotate(24 112 124)\"/>\n                    <ellipse cx=\"96\" cy=\"196\" rx=\"4.4\" ry=\"2.8\" fill=\"#E9A03B\" transform=\"rotate(-30 96 196)\"/>\n                  </g>\n                  <text x=\"352\" y=\"284\" font-family=\"Songti SC,serif\" font-size=\"12\" fill=\"#8A6A45\" text-anchor=\"end\">示例插画</text>\n                  <rect width=\"400\" height=\"300\" filter=\"url(#grainX)\" opacity=\".05\" style=\"mix-blend-mode:soft-light\"/>\n                </svg>";
+
+(()=>{'use strict';
+const KEY='xiaohuaya.delivery.v1.1';
+const STUDENTS=[{id:'lele',name:'乐乐',age:7,color:'a1'},{id:'guoguo',name:'果果',age:8,color:'a2'},{id:'xiaoman',name:'小满',age:6,color:'a3'}];
+const TASKS=[
+{title:'树干三笔画',desc:'用细、中、粗三种笔触各画一棵树干，试着表现下粗上细。',material:'铅笔',minutes:8},
+{title:'枝干接一接',desc:'先画主干，再从主干接出三条树枝，观察连接的位置。',material:'铅笔',minutes:10},
+{title:'粗细对照',desc:'画两棵树，一棵树干上下同粗，一棵下粗上细，说说看起来有什么不同。',material:'蜡笔',minutes:12},
+{title:'树干形状拼贴',desc:'剪出一个下宽上窄的树干和三条树枝，拼出一棵树。剪裁请成人陪同。',material:'彩纸',minutes:15},
+{title:'树根落地',desc:'画出地面线，让树干延伸到地面，再加两条短树根。',material:'铅笔',minutes:10},
+{title:'观察一棵树',desc:'观察窗外的一棵树，用简单线条画出主干和分枝。',material:'速写本',minutes:12}
+];
+const OBS=[['构图','树冠位于画面中部，右上方留有天空和太阳。'],['色彩','树冠中可见深浅不同的黄色与橙色。'],['造型','树干较细，枝干连接位置可以进一步观察。'],['创意','画面右侧有零散的落叶形状。'],['完成度','树冠、树干和地面均有描绘。']];
+const SAMPLE='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(SAMPLE_SVG);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const icon=(name)=>`<svg class="ic" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+const emptyDoc=()=>({image:null,imageKind:'',workId:'',fileName:'',material:'水粉',scenario:'normal',analysis:'none',draft:{student:'',parent:'',note:''},tab:'parent',reviewed:false,tasks:[0,1,2],practiceApproved:false,report:null});
+const fresh=()=>({version:1.1,selected:'lele',queueFilter:'pending',docs:Object.fromEntries(STUDENTS.map(s=>[s.id,emptyDoc()]))});
+let state=fresh(),storageOK=true,persistenceNotice='',route='home',timers=[],runId=0,reading=false,readToken=0;
+try{const raw=localStorage.getItem(KEY);if(raw){const p=JSON.parse(raw);if(p.version!==1.1||!p.docs)throw Error('format');for(const s of STUDENTS){if(p.docs[s.id]){state.docs[s.id]={...emptyDoc(),...p.docs[s.id],draft:{...emptyDoc().draft,...p.docs[s.id].draft}};}}for(const s of STUDENTS){const d=state.docs[s.id];if(d.image&&!d.workId){d.workId='restored-'+s.id;if(d.report&&d.report.image===d.image)d.report.workId=d.workId;}}if(STUDENTS.some(s=>s.id===p.selected))state.selected=p.selected;}}
+catch(e){storageOK=false;persistenceNotice='未能恢复浏览器草稿。当前可继续使用，请导出备份。';}
+const doc=()=>state.docs[state.selected];const canSync=()=>!!doc().report&&!!doc().workId&&doc().report.workId===doc().workId;const student=()=>STUDENTS.find(s=>s.id===state.selected);
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));storageOK=true;persistenceNotice='';}catch(e){storageOK=false;persistenceNotice='浏览器未能保存。当前内容仍在本页，关闭前请到「我的」导出备份。';}saveStatus();}
+function saveStatus(){const e=$('#saveStatus');if(e){e.textContent=storageOK?'草稿已保存到当前浏览器':'未能保存到浏览器，请导出备份';e.style.color=storageOK?'var(--green)':'#A23922';}const w=$('#storageWarning');if(w)w.textContent=persistenceNotice;}
+function toast(msg){const e=$('#toast');e.textContent=msg;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2400);}
+const btn=(text,act,kind='primary',extra='')=>`<button type="button" class="btn ${kind}" data-action="${act}" ${extra}>${text}</button>`;
+const goBtn=(text,id,kind='ghost')=>`<button type="button" class="btn ${kind}" data-go="${id}">${text}</button>`;
+const head=(title,back='home',side='')=>`<div class="appbar"><button type="button" class="iconbtn" data-go="${back}" aria-label="返回${back==='queue'?'待点评队列':'上一页'}">${icon('left')}</button><div class="ttl">${title}</div><div class="side">${side}</div></div>`;
+const art=(image,kind='sample')=>`<div class="art-shell"><img class="artimg" src="${esc(image||SAMPLE)}" alt="${kind==='sample'?'秋天的树示例插画':'老师选择的本地作品'}"></div>`;
+const warning=()=>`<div class="storage-warning" id="storageWarning" role="status">${esc(persistenceNotice)}</div>`;
+function counts(){let n=STUDENTS.filter(s=>state.docs[s.id].report).length;return {done:n,pending:3-n};}
+function shell(id,content,foot='',tab=false){return `<section class="screen active ${tab?'tab-screen':''} ${id==='report'?'report-only':''}" id="s-${id}" aria-label="${id}">${content}${foot?`<div class="actionbar">${foot}</div>`:''}</section>`;}
+function tabbar(){const on=['home','queue','growth','me'].includes(route);$('#tabbar').classList.toggle('hide',!on);$('#tabbar').hidden=!on;$('#tabbar').innerHTML=[['home','home','工作台'],['queue','users','班级'],['growth','chart','成长'],['me','me','我的']].map(([r,i,t])=>`<button type="button" class="tab ${route===r?'on':''}" data-go="${r}" ${route===r?'aria-current="page"':''}>${icon(i)}${t}</button>`).join('');$('#jump').innerHTML=[['home','工作台'],['queue','待点评'],['upload','上传作品'],['result','点评定稿'],['practice','练习单'],['report','家长报告'],['growth','成长记录'],['me','使用与备份']].map(([r,t])=>`<button type="button" data-go="${r}" class="${route===r?'on':''}">${t}</button>`).join('');}
+function home(){const c=counts();const recent=STUDENTS.filter(s=>state.docs[s.id].report).map(s=>`<button type="button" class="rrow" style="width:100%;text-align:left;cursor:pointer" data-report="${s.id}"><div class="ava ${s.color}" style="margin:0">${s.name[0]}</div><div class="info"><div class="n">${s.name} ·《秋天的树》</div><div class="d">${esc(state.docs[s.id].report.at)} · 本地确认</div></div><span class="tag ok">查看</span></button>`).join('');
+return shell('home',`<div class="appbar"><div class="brand"><span class="logo">芽</span>小画芽</div><span class="tag gray">原型演示</span></div><div class="scroll"><div class="greet"><div class="hi">林老师，你好</div><div class="date">向日葵班 · 本次示例课《秋天的树》</div></div><div class="hero"><div class="glow"></div><div class="kicker">待点评作品</div><div class="num">${c.pending}<span>份</span></div><div class="sub">逐份核对作品与评语</div><button type="button" class="go" data-go="queue">${c.pending?'开始点评':'查看已确认'} ${icon('arrow')}</button><div class="hero-art"><img class="artimg" src="${SAMPLE}" alt="示例插画"></div></div><div class="statrow"><div class="stat"><div class="n">3</div><div class="l">示例学生</div></div><div class="stat"><div class="n">${c.done}</div><div class="l">本地已确认</div></div><div class="stat"><div class="n">—</div><div class="l">真实家长打开率</div></div></div><div class="sec-head"><h3>我的班</h3><span>1 个示例班</span></div><button type="button" class="classcard" data-go="queue" style="width:100%;text-align:left"><div class="cc-top"><div class="t">向日葵班 · 创意水粉</div><span class="tag warn">${c.pending} 待评</span></div><div class="cc-bottom"><div class="avs"><span class="ava a1">乐</span><span class="ava a2">果</span><span class="ava a3">满</span></div><div class="s">3 名虚构学生 · 一人一份草稿</div></div></button><div class="sec-head"><h3>最近确认</h3><span>仅当前浏览器</span></div><div class="recent">${recent||'<div class="card tiny muted">还没有确认记录。先完成一份点评吧。</div>'}</div><div class="tip">${icon('info')}<div>演示不会联系家长，也不生成真实业务成绩。</div></div>${warning()}</div>`,'',true);}
+function queue(){const c=counts();const filter=state.queueFilter;const rows=STUDENTS.filter(s=>filter==='done'?!!state.docs[s.id].report:!state.docs[s.id].report).map(s=>{const d=state.docs[s.id];return `<div class="qrow"><div class="av ${s.color}">${s.name[0]}</div><div class="who"><div class="n">${s.name} · ${s.age} 岁</div><div class="s">${d.report?'本地已确认，可继续修改':d.image?(d.analysis==='none'?'已选作品 · 待观察或手写':'点评草稿待确认'):'待选择作品'}</div></div>${d.report?`<button type="button" class="mini-btn" data-report="${s.id}">报告</button>`:''}<button type="button" class="mini-btn coral" data-student="${s.id}">${d.report?'编辑':'去点评'}</button></div>`;}).join('');return shell('queue',head('向日葵班')+`<div class="scroll"><p class="page-sub">《秋天的树》· 3 名示例学生 · 逐份确认</p><div class="seg" role="group" aria-label="队列筛选"><button type="button" class="${filter==='pending'?'on':''}" data-filter="pending">待点评 ${c.pending}</button><button type="button" class="${filter==='done'?'on':''}" data-filter="done">已确认 ${c.done}</button></div><div class="card" style="padding:4px 14px">${rows||'<div class="empty-state"><h3>这里暂时没有作品</h3><p>可切换标签查看其他状态。</p></div>'}</div><div class="tip">${icon('info')}<div>每位学生的作品、三版草稿和报告分别保存。重新编辑不影响之前确认的报告。</div></div>${warning()}</div>`,'',true);}
+function upload(){const d=doc(),s=student();return shell('upload',head('点评作品','queue',`<span class="tag gray">${s.name}</span>`)+`<div class="scroll"><div class="steps"><div class="step on"><span class="dotn">1</span>作品</div><div class="step-line"></div><div class="step"><span class="dotn">2</span>观察</div><div class="step-line"></div><div class="step"><span class="dotn">3</span>定稿</div></div>${d.image?art(d.image,d.imageKind):'<div class="drop-empty">'+icon('image')+'<p>先选择一张练习作品</p></div>'}<div class="toolbar">${btn('使用示例作品','sample','primary')}${btn('选择本地图片','choose','ghost')}${d.image?btn('移除作品','remove','ghost'):''}</div><input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp" hidden><div class="art-caption">${d.image?esc(d.imageKind==='sample'?'示例插画用于演示，不是学生真实作品。':d.fileName+' · 仅在此浏览器预览，不会上传服务器。'):'支持 PNG、JPEG、WebP，原文件不超过 5MB、4000万像素。预览会缩小至长边1280像素，原文件不修改。'}<br>更换作品会清空该学生当前草稿；已确认的旧报告保留。</div><div id="uploadError" class="error-msg" role="alert"></div><div class="card" style="margin-top:14px"><div class="form-row"><div class="k">学生</div><div class="v">${s.name} · ${s.age} 岁</div></div><div class="form-row"><div class="k">课题</div><div class="v">《秋天的树》</div></div><label class="field">材料<select id="material"><option ${d.material==='水粉'?'selected':''}>水粉</option><option ${d.material==='蜡笔'?'selected':''}>蜡笔</option><option ${d.material==='综合材料'?'selected':''}>综合材料</option></select></label></div>${d.imageKind==='custom'?'<div class="warnbox">本原型没有接入真实 AI。自选图片不会套用示例观察，请由老师手工填写。</div>':`<label class="field">演示场景<select id="scenario"><option value="normal" ${d.scenario==='normal'?'selected':''}>正常示例</option><option value="low" ${d.scenario==='low'?'selected':''}>信息不足 需要手写</option><option value="fail" ${d.scenario==='fail'?'selected':''}>分析失败 可重试</option></select></label><div class="tip">${icon('info')}<div>仅用预设内容说明产品流程，不会识别图片，不执行自动裁切和透视校正。</div></div>`}${warning()}</div>`,btn(d.imageKind==='custom'?'手工写点评':'开始观察演示','analyze','primary block',!d.image||reading?'disabled':''));}
+function analyzing(){return shell('analyzing',head('观察演示','upload')+`<div class="scroll"><div class="analyze">${art(doc().image,doc().imageKind)}<h2>正在演示观察流程</h2><p class="sub">这里播放演示进度，不调用真实 AI</p><div class="steps-list"><div class="sl on">准备示例作品</div><div class="sl">整理可见画面细节</div><div class="sl">生成预设草稿</div></div><div class="progress"><i id="prog" style="width:15%"></i></div>${btn('取消并返回','cancel','ghost')}</div></div>`);}
+function blank(title,message,action='queue',text='去待点评队列'){return `<div class="scroll"><div class="empty-state"><h3>${title}</h3><p>${message}</p>${goBtn(text,action,'primary')}</div></div>`;}
+function observation(){const d=doc();if(d.imageKind!=='sample'||d.analysis!=='ready')return '<div class="warnbox">尚无可验证的自动观察。请老师对照作品手工填写，不预填画面结论。</div>';return `<div class="card"><h3>画面观察 <span class="tiny muted">示例内容</span></h3>${OBS.map(([a,b])=>`<div class="observe"><b>${a}</b><span>${b}</span></div>`).join('')}<p class="tiny muted">没有跨期历史作品，暂不判断进步或退步。</p></div>`;}
+function result(){const d=doc(),s=student();if(!d.image)return shell('result',head('点评定稿','queue')+blank('还没有选择作品','先选择作品，再开始观察或手工写点评。','upload','选择作品'));if(d.analysis==='none')return shell('result',head('点评定稿','upload')+blank('先选择观察方式','使用示例可看观察流程；自选图片请手工点评。','upload','返回作品页'));if(d.analysis==='failed')return shell('result',head('观察未完成','upload')+`<div class="scroll"><div class="empty-state"><h3>分析失败 演示场景</h3><p>没有生成点评，也没有影响已确认的报告。<br>可以重试正常示例，或改为手工填写。</p><div class="toolbar">${btn('重试正常示例','retry')}${btn('改为手工填写','manual','ghost')}</div></div></div>`);
+return shell('result',head('点评 · '+s.name,'upload','<span class="tag gray">草稿</span>')+`<div class="scroll">${art(d.image,d.imageKind)}<div class="art-caption">${d.imageKind==='sample'?'示例插画 · 观察文字为预设演示':'本地作品 · 老师手工点评'}</div>${d.analysis==='low'?'<div class="warnbox">信息不足 演示场景：未生成预设评语，请老师手工填写。</div>':''}${observation()}<div class="card" style="margin-top:12px"><h3>分层点评</h3><div class="tabs" role="group" aria-label="点评版本">${[['student','学生版'],['parent','家长版'],['note','课堂记录']].map(([k,t])=>`<button type="button" class="${d.tab===k?'on':''}" data-crit="${k}" aria-pressed="${d.tab===k}">${t}</button>`).join('')}</div><label class="field" for="critText" id="critLabel">${{student:'给学生的话',parent:'家长将看到的点评',note:'仅老师可见的课堂记录'}[d.tab]}</label><textarea class="crit" id="critText" maxlength="1000" rows="7" spellcheck="false" aria-describedby="charCount" style="border:1px solid #DDD4C5;border-radius:12px;width:100%;padding:12px;resize:vertical">${esc(d.draft[d.tab])}</textarea><div class="tiny muted" id="charCount">${d.draft[d.tab].length} / 1000 字符</div>${d.imageKind==='sample'&&d.analysis==='ready'?`<div class="aitools"><button type="button" class="aitool" data-action="insert" data-insert="position">＋ 补画面位置</button><button type="button" class="aitool" data-action="insert" data-insert="encourage">＋ 加一句鼓励</button><button type="button" class="aitool" data-action="restore">恢复当前示例原稿</button></div>`:''}<div class="save-status" id="saveStatus" aria-live="polite"></div><label class="checkline"><input type="checkbox" id="reviewed" ${d.reviewed?'checked':''}><span>我已核对家长版中的事实、语气和作品，确认只把家长版放进报告。</span></label><div id="sendError" class="error-msg" role="alert"></div></div><div class="tip">${icon('info')}<div>家长报告只采用确认时的家长版。学生版和课堂记录不会出现在报告中。${d.report?'已有旧报告；本次修改需再次确认才会更新。':''}</div></div>${warning()}</div>`,`<div class="note">${d.report?'重新确认将更新报告':'仅本地生成报告'}<br>不会发送微信消息</div>`+btn(d.report?'重新确认报告':'核对并生成报告','send','primary','id="sendBtn" '+(!d.reviewed||!d.draft.parent.trim()?'disabled':'')));}
+function success(){const d=doc(),s=student();if(!d.report)return shell('success',head('确认结果','queue')+blank('还没有确认报告','请先核对家长版并生成报告。','result','去点评定稿'));return shell('success',`<div class="scroll"><div class="done-wrap"><div class="bigcheck">${icon('check')}</div><h2>${s.name}的报告已确认</h2><p>已生成本地只读预览<br>没有向家长发送消息</p><div class="card tiny muted">确认时间 ${esc(d.report.at)}<br>正文 ${d.report.parent.length} 字 · 只含家长版<br>老师可继续修改草稿，旧报告保持不变。</div><div class="done-cards"><button type="button" class="done-card" data-go="report" style="width:100%;border:1px solid var(--line);text-align:left">${icon('image')}<div class="info"><div class="t">预览家长报告</div><div class="s">查看本次确认的作品与寄语</div></div>${icon('right')}</button><button type="button" class="done-card" data-go="practice" style="width:100%;border:1px solid var(--line);text-align:left">${icon('edit')}<div class="info"><div class="t">选择练习备选</div><div class="s">三个备选任选一个，确认后同步</div></div>${icon('right')}</button></div></div></div>`,goBtn('回工作台','home')+btn('点评下一位','next','primary'));}
+function taskMarkup(ids,readonly=false){return ids.map((k,i)=>{const t=TASKS[k];return `<div class="task"><div class="top"><div class="idx">${i+1}</div><div class="t">${t.title}<small>${t.desc}</small></div>${readonly?'':`<button type="button" class="swap" data-swap="${i}" aria-label="替换第${i+1}个练习">${icon('refresh')}</button>`}</div><div class="meta2"><span>${icon('clock')}${t.material} · ${t.minutes} 分钟</span></div></div>`;}).join('');}
+function practice(){const d=doc();if(!d.image||d.analysis!=='ready'||d.imageKind!=='sample')return shell('practice',head('练习备选','queue')+blank('暂不自动推荐练习','练习题库只适用于《秋天的树》正常示例。自选作品和信息不足时，应由老师另行设计。','upload','返回作品页'));return shell('practice',head('结构练习备选','result')+`<div class="scroll"><div class="reason"><div class="txt"><b>本次主题 树干结构</b><br>三个备选任选一个，不要求全部完成。题目来自示例题库，需老师确认。</div></div><div id="tasks">${taskMarkup(d.tasks)}</div><div class="tip">${icon('info')}<div>每个练习 8–15 分钟。换题只修改草案，点击底部确认后才同步到家长报告。</div></div><div class="save-status" id="saveStatus"></div>${warning()}</div>`,btn('换一组','shuffle','ghost')+btn(canSync()?'确认并同步报告':'确认练习草案','practice-save','primary'));}
+function report(){const r=doc().report,s=student();if(!r)return shell('report',`<div class="appbar"><div class="ttl">家长报告 只读预览</div></div>`+`<div class="scroll"><div class="empty-state"><h3>尚未生成家长报告</h3><p>需老师先核对家长版并确认。<br>可通过手机外的评审导航返回待点评。</p></div></div>`);return shell('report',`<div class="appbar"><div class="ttl">家长报告</div><span class="tag gray">只读预览</span></div><div class="scroll h5"><div class="brandline"><div class="b"><span class="logo">芽</span>${s.name}的美术记录</div><div class="week">本次课后点评</div></div><div class="h5-hero">${art(r.image,r.imageKind)}<div class="cap"><b>《秋天的树》</b> ${esc(r.material)} · ${s.name} ${s.age} 岁</div></div><div class="quote"><p>${esc(r.parent)}</p><div class="sign">—— 林老师</div></div>${r.tasks?`<div class="card" style="margin-top:14px"><h3>在家练 任选一个</h3><p class="tiny muted">主题 树干结构 · 每题不超过15分钟</p>${taskMarkup(r.tasks,true)}</div>`:'<div class="card tiny muted" style="margin-top:14px">老师暂未附加练习，本次无需额外作业。</div>'}<div class="card tiny muted" style="margin-top:14px">本次没有可比较的历史作品，不据此判断进步或退步。</div><div class="tiny muted" style="text-align:center;margin-top:18px">${esc(r.at)} 确认<br>此页为本地模拟预览，未发送微信通知。<br>学生版与课堂记录不会展示在此页。</div></div>`);}
+function growth(){const s=student(),r=doc().report;return shell('growth',head('成长记录')+`<div class="scroll"><label class="field">选择学生<select id="growthStudent" class="name-select">${STUDENTS.map(x=>`<option value="${x.id}" ${s.id===x.id?'selected':''}>${x.name} · ${x.age} 岁</option>`).join('')}</select></label><div class="profile-mini"><div class="big-av">${s.name[0]}</div><div><div class="n">${s.name} · ${s.age} 岁</div><div class="s">向日葵班 · 本地记录</div></div></div><div class="card"><h3>最近一次确认</h3>${r?`${art(r.image,r.imageKind)}<p class="tiny muted">${esc(r.at)} ·《秋天的树》</p><p class="tiny readonly-copy">${esc(r.parent)}</p>${goBtn('查看家长报告','report','ghost')}`:'<p class="tiny muted">还没有确认记录。</p>'}</div><div class="tip">${icon('info')}<div>当前只保留每位学生最近一次确认，不是完整的历史档案。没有跨期作品证据，不展示分数曲线或成长结论。</div></div></div>`,'',true);}
+function me(){return shell('me',`<div class="appbar"><div class="brand"><span class="logo">芽</span>小画芽</div><span class="tag gray">v1.1</span></div><div class="scroll"><div class="me-hero"><div class="av">林</div><div><div class="n">林老师</div><div class="s">虚构演示身份 · 无真实认证</div></div></div><div class="card"><h3>使用说明</h3><p class="privacy-copy">1 进入班级选择学生，使用示例作品或本地图片。<br>2 示例可演示正常、信息不足和失败流程。自选图请手工填写。<br>3 修改家长版并勾选核对，再生成只读报告。<br>4 练习需另行确认，才会加入报告。</p></div><div class="card"><h3>保存与备份</h3><p class="privacy-copy">草稿保存在当前浏览器。同一文件换位置、换浏览器或清理网站数据可能无法继续读取。请导出 JSON 备份；此版本不支持导入恢复。存储不可用时本页仍可编辑，关闭前请导出。</p>${btn('导出本地数据 JSON','export','ghost block')}<div class="save-status" id="saveStatus"></div>${warning()}</div><div class="card"><h3>数据与隐私边界</h3><p class="privacy-copy">没有服务器、真实 AI、微信通道或在线登录。本地存储不等于安全权限隔离，请勿录入真实儿童姓名、联系方式等敏感信息。图片与改稿不会自动用于训练。真实上线前仍需完成身份权限、授权管理、数据删除与安全验证。</p></div><div class="card"><h3>重新开始演示</h3><p class="privacy-copy">清空三位示例学生的草稿和本地确认记录。建议先导出备份。</p>${btn('重置演示数据','reset','ghost block')}</div><div class="ver">离线交互原型 · 2026年10月21日<br>业务效果尚待真实试用验证</div></div>`,'',true);}
+function render(){const fn={home,queue,upload,analyzing,result,success,practice,report,growth,me}[route]||home;$('#screens').innerHTML=fn();tabbar();saveStatus();}
+function cancelTimers(){runId++;timers.forEach(clearTimeout);timers=[];}
+function go(id,replace=false){if(route==='home'&&id==='queue')state.queueFilter=counts().pending?'pending':'done';if(reading){readToken++;reading=false;}if(!['home','queue','upload','analyzing','result','success','practice','report','growth','me'].includes(id))id='home';cancelTimers();route=id;if(route==='analyzing'&&!doc().image)route='upload';if(route==='analyzing'&&doc().imageKind!=='sample'){doc().analysis='manual';doc().reviewed=false;persist();route='result';}render();const hash='#'+route;if(location.hash!==hash){try{history[replace?'replaceState':'pushState'](null,'',hash);}catch(e){location.hash=route;}}if(route==='analyzing')runAnalysis();}
+function runAnalysis(){if(doc().imageKind!=='sample'){doc().analysis='manual';persist();go('result',true);return;}const token=runId,sid=state.selected;timers.push(setTimeout(()=>{if(token!==runId)return;const e=$('#prog');if(e)e.style.width='60%';},500));timers.push(setTimeout(()=>{if(token!==runId||route!=='analyzing'||sid!==state.selected)return;const d=doc();if(d.scenario==='fail'){d.analysis='failed';}else if(d.scenario==='low'){d.analysis='low';}else{d.analysis='ready';if(!Object.values(d.draft).some(Boolean))d.draft=original();}d.reviewed=false;persist();go('result',true);},1200));}
+function original(){const n=student().name;return {student:`${n}，你的树冠里用了深浅不同的黄色和橙色，右上方的浅黄色很醒目。下次可以试着把树干画得下粗上细，再看看树的形状有什么变化。`,parent:`本次课题《秋天的树》。${n}的画面中，树冠呈现深浅不同的黄色与橙色，右上方有较浅的色块。树干较细，下一次可以练习下粗上细的树干结构。本次没有可比较的历史作品，暂不判断进步。`,note:'可见事实：树冠有深浅色块，树干较细。课堂过程与创作意图需老师另行记录，不由单张图片推断。下次教学备选：树干粗细与枝干连接。'};}
+function ask(message){return new Promise(resolve=>{const dlg=document.createElement('dialog');dlg.className='confirm-dialog';dlg.setAttribute('aria-labelledby','confirmTitle');dlg.innerHTML=`<h2 id="confirmTitle">请确认本次操作</h2><p>${esc(message)}</p><div class="toolbar"><button type="button" class="btn ghost" data-answer="cancel">取消</button><button type="button" class="btn primary" data-answer="yes">确认继续</button></div>`;document.body.appendChild(dlg);const done=value=>{dlg.close();dlg.remove();resolve(value);};dlg.addEventListener('click',e=>{const b=e.target.closest('[data-answer]');if(b)done(b.dataset.answer==='yes');});dlg.addEventListener('cancel',e=>{e.preventDefault();done(false);});dlg.showModal();});}
+async function needReplace(){return !doc().image||await ask('更换或移除作品会清空该学生当前草稿和练习草案，已确认的旧报告仍保留。确定继续吗？');}
+function setImage(image,kind,fileName=''){readToken++;reading=false;const old=doc();state.docs[state.selected]={...emptyDoc(),image,imageKind:kind,workId:Date.now().toString(36)+Math.random().toString(36).slice(2),fileName,report:old.report,material:old.material};persist();go('upload',true);}
+function send(){const d=doc();if(!d.image){toast('请先选择作品');return;}if(!d.draft.parent.trim()||d.draft.parent.length>1000){$('#sendError').textContent='家长版需填写1到1000字符。';return;}if(!d.reviewed){$('#sendError').textContent='请先勾选核对确认。';return;}d.report={workId:d.workId,parent:d.draft.parent.trim(),image:d.image,imageKind:d.imageKind,material:d.material,tasks:d.practiceApproved?[...d.tasks]:null,at:new Date().toLocaleString('zh-CN',{hour12:false}),revision:(d.report?.revision||0)+1};persist();go('success');}
+function updateDraft(value){value=String(value).slice(0,1000);const ta=$('#critText');if(ta&&ta.value!==value)ta.value=value;const d=doc();d.draft[d.tab]=value;d.reviewed=false;persist();const count=$('#charCount');if(count)count.textContent=value.length+' / 1000 字符';const ck=$('#reviewed');if(ck)ck.checked=false;const b=$('#sendBtn');if(b)b.disabled=true;}
+function exportData(){const data={...state,exportedAt:new Date().toISOString(),notice:'小画芽v1.1本地备份，包含图片与草稿，无导入功能。'};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='小画芽-本地数据备份.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),10000);toast('已发起 JSON 下载，请保管备份文件');}
+document.addEventListener('click',async e=>{const el=e.target.closest('button');if(!el)return;if(el.dataset.go){go(el.dataset.go);return;}if(el.dataset.student){state.selected=el.dataset.student;persist();go(doc().analysis==='none'?'upload':'result');return;}if(el.dataset.report){state.selected=el.dataset.report;persist();go('report');return;}if(el.dataset.filter){state.queueFilter=el.dataset.filter;persist();render();return;}if(el.dataset.crit){doc().tab=el.dataset.crit;persist();render();return;}if(el.dataset.swap!==undefined){const i=+el.dataset.swap,pool=TASKS.map((_,k)=>k).filter(k=>!doc().tasks.includes(k));doc().tasks[i]=pool[Math.floor(Math.random()*pool.length)];doc().practiceApproved=false;persist();render();return;}
+const a=el.dataset.action;if(!a)return;
+if(a==='sample'){if(await needReplace())setImage(SAMPLE,'sample');}
+if(a==='choose'){$('#imageInput').click();}
+if(a==='remove'){if(await needReplace()){readToken++;reading=false;setImage(null,'');}}
+if(a==='analyze'){if(!doc().image)return;if(doc().imageKind==='custom'){doc().analysis='manual';persist();go('result');}else go('analyzing');}
+if(a==='cancel')go('upload');
+if(a==='retry'){doc().scenario='normal';persist();go('analyzing');}
+if(a==='manual'){doc().analysis='manual';doc().reviewed=false;persist();go('result');}
+if(a==='insert'){const ta=$('#critText');const text=el.dataset.insert==='position'?'树冠右上方可以看到较浅的黄色。':'愿意尝试不同的画法，就有机会发现新的表达。';const pos=ta.selectionStart??ta.value.length,end=ta.selectionEnd??pos;const v=ta.value.slice(0,pos)+text+ta.value.slice(end);if(v.length>1000){toast('超过1000字符，请先精简内容');return;}updateDraft(v);ta.value=v;ta.focus();ta.setSelectionRange(pos+text.length,pos+text.length);}
+if(a==='restore'){if(await ask('恢复当前版本的示例原稿？当前版本的修改会被替换，其他版本保持不变。')){const d=doc();d.draft[d.tab]=original()[d.tab];d.reviewed=false;persist();render();}}
+if(a==='send')send();
+if(a==='next'){const n=STUDENTS.find(s=>!state.docs[s.id].report);if(n){state.selected=n.id;persist();go(doc().analysis==='none'?'upload':'result');}else{state.queueFilter='done';persist();go('queue');toast('三份点评都已本地确认');}}
+if(a==='shuffle'){const first=doc().tasks[0];doc().tasks=[(first+3)%6,(first+4)%6,(first+5)%6];doc().practiceApproved=false;persist();render();}
+if(a==='practice-save'){const d=doc();d.practiceApproved=true;if(canSync()){d.report.tasks=[...d.tasks];d.report.practiceAt=new Date().toLocaleString('zh-CN',{hour12:false});}persist();toast(canSync()?'练习已同步到本地报告':'练习已确认，重新确认本次作品后才会附带到报告');}
+if(a==='export')exportData();
+if(a==='reset'){if(await ask('清空当前浏览器的小画芽演示数据？建议先导出备份。')){cancelTimers();readToken++;reading=false;state=fresh();persist();go('home',true);toast('演示数据已重置');}}
+});
+document.addEventListener('input',e=>{if(e.target.id==='critText')updateDraft(e.target.value);});
+document.addEventListener('change',async e=>{const t=e.target;if(t.id==='reviewed'){doc().reviewed=t.checked;persist();$('#sendBtn').disabled=!t.checked||!doc().draft.parent.trim();}if(t.id==='material'){doc().material=t.value;doc().reviewed=false;persist();}if(t.id==='scenario'){doc().scenario=t.value;persist();}if(t.id==='growthStudent'){state.selected=t.value;persist();render();}if(t.id==='imageInput'){const file=t.files?.[0];if(!file)return;const showError=m=>{const h=$('#uploadError');if(h)h.textContent=m;toast(m);};if(!['image/png','image/jpeg','image/webp'].includes(file.type)){showError('请选择 PNG、JPEG 或 WebP 图片。');return;}if(file.size>5*1024*1024){showError('图片超过5MB，请先压缩或选择其他图片。');return;}if(!await needReplace())return;const sid=state.selected,token=++readToken;reading=true;const b=$('[data-action="analyze"]');if(b)b.disabled=true;try{const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file);});const image=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=data;});if(!image.naturalWidth||!image.naturalHeight)throw Error('decode');if(image.naturalWidth*image.naturalHeight>40000000)throw Error('large');const scale=Math.min(1,1280/Math.max(image.naturalWidth,image.naturalHeight));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0,canvas.width,canvas.height);const imageData=canvas.toDataURL('image/jpeg',.82);if(token!==readToken||sid!==state.selected||route!=='upload')return;reading=false;setImage(imageData,'custom',file.name);toast('已在本地预览，请手工填写点评');}catch(err){if(token===readToken&&sid===state.selected)showError(err?.message==='large'?'图片超过4000万像素，请缩小后重试。旧草稿未改动。':'无法读取这张图片，请选择有效且尺寸适中的图片。旧草稿未改动。');}finally{if(token===readToken){reading=false;const b=$('[data-action="analyze"]');if(b)b.disabled=!doc().image;}}}});
+window.addEventListener('popstate',()=>go(location.hash.slice(1)||'home',true));
+window.addEventListener('hashchange',()=>{const id=location.hash.slice(1)||'home';if(id!==route)go(id,true);});
+go(location.hash.slice(1)||'home',true);
+})();
+</script></body></html>
